@@ -1,11 +1,21 @@
 import React, { useRef, useState } from 'react'
 import './Quiz.css'
-import { data } from '../../assets/data';
+import { useQuery } from '@tanstack/react-query';
+
+
 
 export default function Quiz() {
 
+    const { isPending, error, data } = useQuery({
+        queryKey: ['repoData'],
+        queryFn: () =>
+            fetch('http://127.0.0.1:8000').then(
+                (res) => res.json(),
+            ),
+    })
+
     let [index, setIndex] = useState(0);
-    let [question, setQuestion] = useState(data[index]);
+    let [question, setQuestion] = useState();
     let [lock, setLock] = useState(false);
     let [score, setScore] = useState(0);
     let [result, setResult] = useState(false);
@@ -15,6 +25,10 @@ export default function Quiz() {
     let Option3 = useRef(null);
     let Option4 = useRef(null);
 
+    if (isPending) return 'Loading...'
+    if (error) return 'An error has occurred: ' + error.message
+    if (question === undefined) setQuestion(data[index] ?? null)
+    if (!question) return 'No data'
 
     let optionArray = [Option1, Option2, Option3, Option4];
 

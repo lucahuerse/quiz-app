@@ -1,12 +1,17 @@
 import React from 'react'
 import Quiz from './components/quiz/quiz'
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
 
-const App = () => {
+const queryClient = new QueryClient()
+
+export default function App() {
   return (
-    <>
-      <Quiz/>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <Quiz />
+    </QueryClientProvider>
   )
 }
-
-export default App
