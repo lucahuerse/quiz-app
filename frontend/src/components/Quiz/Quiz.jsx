@@ -7,12 +7,16 @@ import { cn } from "@/lib/utils";
 import { TypographyH2 } from "@/components/ui/typography_h2";
 import { ModeToggle } from "../mode-toggle";
 import { Progress } from "@/components/ui/progress";
+import { Card as ChartCard, Flex, ProgressCircle, Text } from "@tremor/react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowRightIcon } from '@radix-ui/react-icons'
+
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function QuizContainer() {
   return (
-    <Card className="w-auto min-w-full min-h-[28rem] md:max-w-[46rem] md:min-w-[46rem]">
+    <Card className="w-auto min-w-full md:max-w-[46rem] md:min-w-[46rem]">
       <CardHeader className="p-6 flex flex-row items-center justify-between space-y-0 border-b">
         <CardTitle>Quiz App</CardTitle>
         <ModeToggle />
@@ -22,7 +26,7 @@ export function QuizContainer() {
   );
 }
 
-const QuizCardContent = ({ children }) => <CardContent className="flex flex-col gap-2 min-h-32 border-b p-6">{children}</CardContent>;
+const QuizCardContent = ({ children }) => <CardContent className="flex flex-col gap-2 border-b p-6 min-h-[337px]">{children}</CardContent>;
 const QuizCardFooter = ({ children }) => <CardFooter className="flex flex-col gap-2 p-6">{children}</CardFooter>;
 
 function Quiz() {
@@ -45,9 +49,24 @@ function Quiz() {
 
   if (isPending) {
     return (
-      <QuizCardContent className="flex items-center justify-center h-full">
-        <ClipLoader color="#707070" />
-      </QuizCardContent>
+      <>
+        <QuizCardContent>
+          <div className="pb-3">
+            <Skeleton className="h-[2.25rem] w-4/5" />
+          </div>
+          <Skeleton className="h-[2.5rem] w-full" />
+          <Skeleton className="h-[2.5rem] w-full" />
+          <Skeleton className="h-[2.5rem] w-full" />
+          <Skeleton className="h-[2.5rem] w-full" />
+          <Skeleton className="h-[2.5rem] w-full" />
+        </QuizCardContent>
+        <QuizCardFooter>
+          <Skeleton className="h-2 w-full" />
+          <p>
+            <Skeleton className="h-4 py-1 w-24" />
+          </p>
+        </QuizCardFooter>
+      </>
     );
   }
 
@@ -102,8 +121,13 @@ function Quiz() {
       <>
         <QuizCardContent>
           <TypographyH2>Quiz completed!</TypographyH2>
-          <div>
-            You scored {score} out of {data.length} points.
+          <div className="items-center flex flex-col gap-3 justify-center">
+            <h3 className="text-center font-semibold text-xl p-3">
+              You scored {score} out of {data.length} points.
+            </h3>
+            <ProgressCircle color="red" className="p-5" size="xl" value={(score / data.length) * 100}>
+              <span className="text-lg text-white font-medium">{(score / data.length) * 100}%</span>
+            </ProgressCircle>
           </div>
           <Button onClick={reset}>Reset</Button>
         </QuizCardContent>
@@ -118,7 +142,7 @@ function Quiz() {
 
   return (
     <>
-      <QuizCardContent className="flex flex-row">
+      <QuizCardContent>
         <div className="flex flex-row justify-start gap-2">
           <TypographyH2 className="border-b-0">{index + 1}.</TypographyH2>
           <TypographyH2 className="border-b-0">{question.question_text}</TypographyH2>{" "}
@@ -150,13 +174,18 @@ function Quiz() {
             {answer.answer_text}
           </Button>
         ))}
-        <Button aria-disabled={!lock} onClick={next}>
+        <div className="flex flex-row justify-end pt-3">
+        <Button className="flex flex-row justify-between gap-1 w-min" aria-disabled={!lock} onClick={next}>
           Next
+          <ArrowRightIcon className="w-5 h-5" />
         </Button>
+        </div>
       </QuizCardContent>
       <QuizCardFooter>
         <Progress className="h-2" value={(index / data.length) * 100} />
-        {index} of {data.length}
+        <p>
+          {index} of {data.length}
+        </p>
       </QuizCardFooter>
     </>
   );
