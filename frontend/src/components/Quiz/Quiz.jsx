@@ -1,32 +1,28 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import ClipLoader from "react-spinners/ClipLoader";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { TypographyH2 } from "@/components/ui/typography_h2";
-import { ModeToggle } from "../mode-toggle";
+import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Card as ChartCard, Flex, ProgressCircle, Text } from "@tremor/react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowRightIcon } from '@radix-ui/react-icons'
-
+import { TypographyH2 } from "@/components/ui/typography_h2";
+import { cn } from "@/lib/utils";
+import { ArrowRightIcon, CheckCircledIcon, CrossCircledIcon, ResetIcon } from "@radix-ui/react-icons";
+import { useQuery } from "@tanstack/react-query";
+import { ProgressCircle } from "@tremor/react";
+import { CircleIcon } from "lucide-react";
+import { useState } from "react";
+import { ModeToggle } from "../mode-toggle";
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 export function QuizContainer() {
   return (
     <Card className="w-auto min-w-full md:max-w-[46rem] md:min-w-[46rem]">
-      <CardHeader className="p-6 flex flex-row items-center justify-between space-y-0 border-b">
-        <CardTitle>Quiz App</CardTitle>
-        <ModeToggle />
-      </CardHeader>
       <Quiz />
     </Card>
   );
 }
 
-const QuizCardContent = ({ children }) => <CardContent className="flex flex-col gap-2 border-b p-6 min-h-[337px]">{children}</CardContent>;
+const QuizCardHeader = ({ children }) => <CardContent className="p-6 flex flex-row items-center justify-between space-y-0 border-b">{children}</CardContent>;
+const QuizCardContent = ({ children }) => <CardContent className="flex flex-col gap-2 border-b p-6 min-h-[400px]">{children}</CardContent>;
 const QuizCardFooter = ({ children }) => <CardFooter className="flex flex-col gap-2 p-6">{children}</CardFooter>;
 
 function Quiz() {
@@ -35,7 +31,7 @@ function Quiz() {
     queryFn: async () => {
       const res = await fetch("http://127.0.0.1:8000/api/quiz_data");
       const data = await res.json();
-      await delay(1000);
+      // await delay(1000);
       return data;
     },
   });
@@ -50,6 +46,10 @@ function Quiz() {
   if (isPending) {
     return (
       <>
+        <QuizCardHeader>
+          <CardTitle>Quiz App</CardTitle>
+          <ModeToggle />
+        </QuizCardHeader>
         <QuizCardContent>
           <div className="pb-3">
             <Skeleton className="h-[2.25rem] w-4/5" />
@@ -72,9 +72,16 @@ function Quiz() {
 
   if (error) {
     return (
-      <QuizCardContent>
-        <TypographyH2>{"An error has occurred: " + error.message}</TypographyH2>
-      </QuizCardContent>
+      <>
+        <QuizCardHeader>
+          <CardTitle>Quiz App</CardTitle>
+          <ModeToggle />
+        </QuizCardHeader>
+        <QuizCardContent>
+          <TypographyH2>{"An error has occurred: " + error.message}</TypographyH2>
+        </QuizCardContent>
+        <QuizCardFooter></QuizCardFooter>
+      </>
     );
   }
 
@@ -107,6 +114,15 @@ function Quiz() {
     }
   };
 
+  const AnswerIcon = ({ lock, isCorrect }) => {
+    if (!lock) return <CircleIcon className="w-5 h-5 mr-2" />;
+    if (isCorrect) {
+      return <CheckCircledIcon className="w-5 h-5 mr-2" />;
+    } else {
+      return <CrossCircledIcon className="w-5 h-5 mr-2" />;
+    }
+  };
+
   const reset = () => {
     setIndex(0);
     setQuestion(data[0]);
@@ -116,20 +132,29 @@ function Quiz() {
     setResult(false);
   };
 
+  const final_score = (score / data.length) * 100;
+
   if (result)
     return (
       <>
-        <QuizCardContent>
-          <TypographyH2>Quiz completed!</TypographyH2>
+        <QuizCardHeader>
+          <CardTitle>Quiz - {question.category}</CardTitle>
+          <ModeToggle />
+        </QuizCardHeader>
+        <QuizCardContent className="items-center flex flex-col gap-3 justify-center">
           <div className="items-center flex flex-col gap-3 justify-center">
-            <h3 className="text-center font-semibold text-xl p-3">
+            <TypographyH2 className="border-b-0">Quiz completed!</TypographyH2>
+            <h3 className="text-center font-semibold text-xl p-3 pt-0">
               You scored {score} out of {data.length} points.
             </h3>
-            <ProgressCircle color="red" className="p-5" size="xl" value={(score / data.length) * 100}>
-              <span className="text-lg text-white font-medium">{(score / data.length) * 100}%</span>
+            <ProgressCircle color={final_score >= 90 ? "green" : final_score >= 80 ? "yellow" : final_score >= 60 ? "orange" : "red"} className="p-3" size="xl" value={(score / data.length) * 100}>
+              <span className="text-lg dark:text-white text-black font-medium">{(score / data.length) * 100}%</span>
             </ProgressCircle>
+          <Button className="flex flex-row justify-between gap-1 w-min" onClick={reset}>
+            Try again 
+            <ResetIcon className="h-4 w-4"/>
+          </Button>
           </div>
-          <Button onClick={reset}>Reset</Button>
         </QuizCardContent>
         <QuizCardFooter>
           <Progress className="h-2" value={((index + 1) / data.length) * 100} />
@@ -142,6 +167,10 @@ function Quiz() {
 
   return (
     <>
+      <QuizCardHeader>
+        <CardTitle>Quiz - {question.category}</CardTitle>
+        <ModeToggle />
+      </QuizCardHeader>
       <QuizCardContent>
         <div className="flex flex-row justify-start gap-2">
           <TypographyH2 className="border-b-0">{index + 1}.</TypographyH2>
@@ -156,9 +185,9 @@ function Quiz() {
               lock ? "cursor-default" : "",
               lock
                 ? answer.is_correct
-                  ? "bg-green-300 text-green-bg-green-400 hover:bg-green-400/90"
+                  ? "dark:bg-green-700 dark:text-green-bg-green-600 dark:hover:bg-green-600/80 bg-green-400"
                   : answer.answer_id === selected
-                    ? "bg-red-400 text-red-bg-red-400 hover:bg-red-400/90"
+                    ? "dark:bg-red-700 dark:text-red-bg-red-600 dark:hover:bg-red-600/80 bg-red-400"
                     : ""
                 : "",
             )}
@@ -171,14 +200,15 @@ function Quiz() {
               }
             }}
           >
+            {lock ? answer.is_correct ? <CheckCircledIcon className="w-5 h-5 mr-2" /> : <CrossCircledIcon className="w-5 h-5 mr-2" /> : <CircleIcon className="w-5 h-5 mr-2" />}
             {answer.answer_text}
           </Button>
         ))}
         <div className="flex flex-row justify-end pt-3">
-        <Button className="flex flex-row justify-between gap-1 w-min" aria-disabled={!lock} onClick={next}>
-          Next
-          <ArrowRightIcon className="w-5 h-5" />
-        </Button>
+          <Button className="flex flex-row justify-between gap-1 w-min" aria-disabled={!lock} onClick={next}>
+            Next
+            <ArrowRightIcon className="w-5 h-5" />
+          </Button>
         </div>
       </QuizCardContent>
       <QuizCardFooter>

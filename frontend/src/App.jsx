@@ -7,7 +7,7 @@ const queryClient = new QueryClient();
 export function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <main className="w-full h-full flex justify-center items-center p-3 md:p-8">
+      <main className="w-full h-full flex flex-row justify-center items-center p-3 md:p-8">
         <QueryClientProvider client={queryClient}>
           <QuizContainer />
         </QueryClientProvider>
