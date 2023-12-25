@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { QuizContainer } from "./components/quiz/quiz";
-import { ThemeProvider } from "./components/theme-provider";
+import { QuizContainer } from "./components/QuizContainer";
+import { ThemeProvider } from "./components/ui/theme-provider";
 
 const queryClient = new QueryClient();
 
-export function App() {
+const App = () => {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <main className="w-full h-full flex flex-row justify-center items-center p-3 md:p-8">
@@ -14,4 +14,6 @@ export function App() {
       </main>
     </ThemeProvider>
   );
-}
+};
+
+export { App };
