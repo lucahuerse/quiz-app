@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { QuizContainer } from "./components/QuizContainer";
+import { QuizContainer } from "./pages/QuizContainer";
 import { ThemeProvider } from "./components/ui/theme-provider";
 
 const queryClient = new QueryClient();

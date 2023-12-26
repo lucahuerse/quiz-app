@@ -7,13 +7,15 @@ import { ArrowRightIcon, CheckCircledIcon, Cross2Icon, CrossCircledIcon } from "
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeftIcon, CircleIcon } from "lucide-react";
 import { useState } from "react";
+import { QuizCardContent } from "../components/ui/QuizCardContent";
+import { QuizCardFooter } from "../components/ui/QuizCardFooter";
+import { QuizCardHeader } from "../components/ui/QuizCardHeader";
+import { ModeToggle } from "../components/ui/mode-toggle";
 import { QuizError } from "./QuizError";
 import { QuizLoading } from "./QuizLoading";
+import { QuizMenu } from "./QuizMenu";
 import { QuizResult } from "./QuizResult";
-import { QuizCardContent } from "./ui/QuizCardContent";
-import { QuizCardFooter } from "./ui/QuizCardFooter";
-import { QuizCardHeader } from "./ui/QuizCardHeader";
-import { ModeToggle } from "./ui/mode-toggle";
+import { useNavigate } from "react-router-dom";
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -25,8 +27,7 @@ const Quiz = () => {
   let [score, setScore] = useState(0);
   let [result, setResult] = useState(false);
   let [selected, setSelected] = useState();
-
-  console.log(goneBack);
+  const navigate = useNavigate();
 
   const [unlockedQuestions, setUnlockedQuestions] = useState([]);
 
@@ -92,7 +93,12 @@ const Quiz = () => {
     <>
       <QuizCardHeader>
         <CardTitle>Quiz - {question.category}</CardTitle>
+        <div className="flex flex-row justify-between gap-2">
+        <Button variant="destructive" size="icon" onClick={() => navigate("/")}>
+          <Cross2Icon className="h-[1.2rem] w-[1.2rem]" />
+        </Button>
         <ModeToggle />
+        </div>
       </QuizCardHeader>
       <QuizCardContent>
         <div className="flex flex-row justify-start gap-2">

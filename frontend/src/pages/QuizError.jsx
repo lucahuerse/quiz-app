@@ -1,10 +1,10 @@
 import React from "react";
-import { QuizCardHeader } from "./ui/QuizCardHeader";
-import { CardTitle } from "./ui/card";
-import { ModeToggle } from "./ui/mode-toggle";
-import { QuizCardContent } from "./ui/QuizCardContent";
-import { TypographyH2 } from "./ui/typography_h2";
-import { QuizCardFooter } from "./ui/QuizCardFooter";
+import { QuizCardHeader } from "../components/ui/QuizCardHeader";
+import { CardTitle } from "../components/ui/card";
+import { ModeToggle } from "../components/ui/mode-toggle";
+import { QuizCardContent } from "../components/ui/QuizCardContent";
+import { TypographyH2 } from "../components/ui/typography_h2";
+import { QuizCardFooter } from "../components/ui/QuizCardFooter";
 
 const QuizError = ({ errorMessage }) => {
   return (
