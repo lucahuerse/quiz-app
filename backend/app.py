@@ -1,64 +1,101 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship, joinedload
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
+
+
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz.db"
+db = SQLAlchemy(app)
 
 import logging
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
-app = Flask(__name__)
 CORS(app)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz.db"
-db = SQLAlchemy(app)
 
 
-# Define your models outside the route function to avoid redefinition on each request
+class Categories(db.Model):
+    __tablename__ = "categories"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
+    emoji = Column(String, nullable=False)
+    questions = relationship("Questions", backref="category")
+
+
 class Questions(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    question_text = db.Column(db.Text, nullable=False)
-    category = db.Column(db.Text)
+    __tablename__ = "questions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    question_text = Column(String, nullable=False)
+    category_id = Column(Integer, ForeignKey("categories.id"))
+    answers = relationship("Answers", backref="question")
 
 
 class Answers(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    answer_text = db.Column(db.Text, nullable=False)
-    is_correct = db.Column(db.Boolean, nullable=False)
-    question_id = db.Column(db.Integer, db.ForeignKey("questions.id"), nullable=False)
-    question = db.relationship("Questions", backref=db.backref("answers", lazy=False))
+    __tablename__ = "answers"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    answer_text = Column(String, nullable=False)
+    is_correct = Column(Boolean, nullable=False)
+    question_id = Column(Integer, ForeignKey("questions.id"))
 
 
-# Create tables outside the route function to avoid repeated creation
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
+
+@app.route("/api/categories", methods=["GET"])
+def get_categories():
+    categories = Categories.query.all()
+    data = [
+        {
+            "id": category.id,
+            "name": category.name,
+            "emoji": category.emoji,
+        }
+        for category in categories
+    ]
+    return jsonify(data)
 
 
 @app.route("/api/quiz_data", methods=["GET"])
 def get_quiz_data():
-    # Move the model definitions and database creation outside of the route function
+    # Query all categories and their associated questions and answers
+    quiz_id = request.args.get("quiz_id")
+    print("Received quiz_id:", quiz_id)
 
-    questions_data = db.session.query(Questions).all()
-
-    questions_count = db.session.query(func.count(Questions.id)).scalar()
-
+    
+    quiz = (
+            Categories.query
+            .options(joinedload(Categories.questions).joinedload(Questions.answers))
+            .filter_by(id=quiz_id)
+            .first()
+        )
+    
+    
     data = [
-        {
-            "question_id": q.id,
-            "question_text": q.question_text,
-            "category": q.category,
-            "answers": [
-                {
-                    "answer_id": a.id,
-                    "answer_text": a.answer_text,
-                    "is_correct": a.is_correct,
-                }
-                for a in q.answers
-            ],
-        }
-        for q in questions_data
-    ]
-
+            {
+                "question_id": question.id,
+                "question_text": question.question_text,
+                "category": question.category.name,
+                "answers": [
+                    {
+                        "answer_id": answer.id,
+                        "answer_text": answer.answer_text,
+                        "is_correct": answer.is_correct,
+                    }
+                    for answer in question.answers
+                ]
+            }
+            for question in quiz.questions
+            ]
+        
     return jsonify(data)
 
 

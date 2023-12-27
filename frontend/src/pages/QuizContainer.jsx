@@ -10,7 +10,7 @@ const QuizContainer = () => {
         <Routes>
           <Route index element={<QuizMenu />} />
           <Route path="/" element={<QuizMenu />} />
-          <Route path="/quiz" element={<Quiz />} />
+          <Route path="/quiz/:id" element={<Quiz />} />
         </Routes>
       </BrowserRouter>
     </Card>

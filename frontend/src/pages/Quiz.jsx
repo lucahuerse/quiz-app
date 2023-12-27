@@ -7,15 +7,14 @@ import { ArrowRightIcon, CheckCircledIcon, Cross2Icon, CrossCircledIcon } from "
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeftIcon, CircleIcon } from "lucide-react";
 import { useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { QuizCardContent } from "../components/ui/QuizCardContent";
 import { QuizCardFooter } from "../components/ui/QuizCardFooter";
 import { QuizCardHeader } from "../components/ui/QuizCardHeader";
 import { ModeToggle } from "../components/ui/mode-toggle";
 import { QuizError } from "./QuizError";
 import { QuizLoading } from "./QuizLoading";
-import { QuizMenu } from "./QuizMenu";
 import { QuizResult } from "./QuizResult";
-import { useNavigate } from "react-router-dom";
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -28,13 +27,12 @@ const Quiz = () => {
   let [result, setResult] = useState(false);
   let [selected, setSelected] = useState();
   const navigate = useNavigate();
-
-  const [unlockedQuestions, setUnlockedQuestions] = useState([]);
+  const { id: quizID } = useParams();
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["repoData"],
+    queryKey: ["quiz_data", quizID],
     queryFn: async () => {
-      const res = await fetch("http://127.0.0.1:8000/api/quiz_data");
+      const res = await fetch(`http://127.0.0.1:8000/api/quiz_data?quiz_id=${quizID}`);
       const data = await res.json();
       // await delay(1000);
       return data;
@@ -42,24 +40,14 @@ const Quiz = () => {
   });
 
   const next = () => {
-    if (index < data.length - 1) {
-      setIndex((prevIndex) => prevIndex + 1);
-      setQuestion(data[index + 1]);
-      setLock(false);
-    } else {
-      setResult(true);
-    }
-    setGoneBack(false);
-  };
-
-  const previous = () => {
-    if (!goneBack) {
-      if (index > 0) {
-        setIndex((prevIndex) => prevIndex - 1);
-        setQuestion(data[index - 1]);
-        setLock(true);
-        setGoneBack(true);
+    if (lock) {
+      if (index === data.length - 1) {
+        setResult(true);
+        return 0;
       }
+      setIndex(++index);
+      setQuestion(data[index]);
+      setLock(false);
     }
   };
 
@@ -94,10 +82,10 @@ const Quiz = () => {
       <QuizCardHeader>
         <CardTitle>Quiz - {question.category}</CardTitle>
         <div className="flex flex-row justify-between gap-2">
-        <Button variant="destructive" size="icon" onClick={() => navigate("/")}>
-          <Cross2Icon className="h-[1.2rem] w-[1.2rem]" />
-        </Button>
-        <ModeToggle />
+          <Button variant="destructive" size="icon" onClick={() => navigate("/")}>
+            <Cross2Icon className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
+          <ModeToggle />
         </div>
       </QuizCardHeader>
       <QuizCardContent>
@@ -120,15 +108,11 @@ const Quiz = () => {
             disabled={lock ? (answer.is_correct ? false : answer.answer_id === selected ? false : true) : false}
             onClick={checkAnswer(answer)}
           >
-            {lock ? answer.is_correct ? <CheckCircledIcon className="w-5 h-5 mr-2" /> : <CrossCircledIcon className="w-5 h-5 mr-2" /> : <CircleIcon className="w-5 h-5 mr-2" />}
+            {lock ? answer.is_correct ? <CheckCircledIcon className="min-w-5 w-5 h-5 mr-2" /> : <CrossCircledIcon className="min-w-5 w-5 h-5 mr-2" /> : <CircleIcon className="min-w-5 w-5 h-5 mr-2" />}
             {answer.answer_text}
           </Button>
         ))}
-        <div className="flex flex-row justify-between pt-3">
-          <Button className="flex flex-row justify-between gap-1 w-min" disabled={index === 0 || goneBack || lock} aria-disabled={!lock} onClick={previous}>
-            <ArrowLeftIcon className="w-5 h-5" />
-            Back
-          </Button>
+        <div className="flex flex-row justify-end pt-3">
           <Button className="flex flex-row justify-between gap-1 w-min" aria-disabled={!lock} onClick={next}>
             Next
             <ArrowRightIcon className="w-5 h-5" />

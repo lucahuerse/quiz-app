@@ -2,20 +2,33 @@ import React from "react";
 import { Card, CardDescription, CardHeader, CardTitle } from "./card";
 import { Button } from "./button";
 import { PlayIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
-const QuizMenuEntry = () => {
-    const navigate = useNavigate();
+export function BadgeSecondary() {
+  return <Badge variant="secondary">Secondary</Badge>;
+}
+
+const QuizMenuEntry = ({ id, category, emoji }) => {
+  const navigate = useNavigate();
+
   return (
     <Card>
       <CardHeader className="p-6 flex flex-row items-center justify-between space-y-0">
         <div className="flex flex-col justify-between gap-2">
-          <CardTitle>Category</CardTitle>
-          <CardDescription>5 Questions</CardDescription>
+          <CardTitle className="flex flex-row justify-start gap-3">
+            <span>{emoji}</span>
+            <span>{category}</span>
+          </CardTitle>
+          <div className="flex flex-row justify-start gap-3 pt-3">
+            <Badge variant="secondary">Questions: 5</Badge>
+            <Badge variant="secondary">Easy</Badge>
+          </div>
         </div>
-        <Button onClick={() => navigate("/quiz")} className="flex flex-row justify-between gap-1 w-min">
-          Start
-          <PlayIcon className="h-4 w-4" />
+        <Button asChild className="dark:bg-green-700 dark:text-green-bg-green-600 dark:hover:bg-green-600/80 bg-green-400 text-white flex-row justify-between gap-1 w-min">
+          <Link to={`/quiz/${id}`}>
+            <PlayIcon className="h-4 w-4" />
+          </Link>
         </Button>
       </CardHeader>
     </Card>
