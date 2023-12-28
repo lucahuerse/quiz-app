@@ -1,14 +1,17 @@
 import { QuizMenuEntry } from "@/components/ui/QuizMenuEntry";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { PlusIcon } from "lucide-react";
 import { QuizCardContent } from "../components/ui/QuizCardContent";
 import { QuizCardHeader } from "../components/ui/QuizCardHeader";
-import { QuizError } from "./QuizError";
-import { QuizLoading } from "./QuizLoading";
 import { CardTitle } from "../components/ui/card";
 import { ModeToggle } from "../components/ui/mode-toggle";
-import { useQuery } from "@tanstack/react-query";
+import { QuizCreate } from "./QuizCreate";
+import { QuizError } from "./QuizError";
+import { QuizLoading } from "./QuizLoading";
+import { EmojiPicker } from "@/components/ui/emoji-picker";
 
 const QuizMenu = () => {
-
   const { isPending, error, data } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -19,13 +22,14 @@ const QuizMenu = () => {
     },
   });
 
-
-
   return (
     <>
       <QuizCardHeader>
         <CardTitle>Menu</CardTitle>
-        <ModeToggle />
+        <div className="flex flex-row justify-between gap-2">
+          <QuizCreate />
+          <ModeToggle />
+        </div>
       </QuizCardHeader>
       <QuizCardContent className="items-center flex flex-col gap-3 justify-center border-b-0">
         {isPending && <QuizLoading />}

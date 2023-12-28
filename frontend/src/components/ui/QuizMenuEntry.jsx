@@ -1,16 +1,14 @@
-import React from "react";
-import { Card, CardDescription, CardHeader, CardTitle } from "./card";
-import { Button } from "./button";
-import { PlayIcon } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { PlayIcon } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "./button";
+import { Card, CardHeader, CardTitle } from "./card";
 
 export function BadgeSecondary() {
   return <Badge variant="secondary">Secondary</Badge>;
 }
 
 const QuizMenuEntry = ({ id, category, emoji }) => {
-  const navigate = useNavigate();
 
   return (
     <Card>

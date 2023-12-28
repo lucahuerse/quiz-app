@@ -9,6 +9,7 @@ from flask import Flask
 
 
 app = Flask(__name__)
+CORS(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz.db"
 db = SQLAlchemy(app)
 
@@ -16,8 +17,6 @@ import logging
 
 logging.basicConfig()
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
-
-CORS(app)
 
 
 class Categories(db.Model):
@@ -50,6 +49,14 @@ class Answers(db.Model):
 # with app.app_context():
 #     db.create_all()
 
+
+@app.route("/api/add_question", methods=["GET", "POST"])
+def post_question():
+    data = request.get_json()
+    print("Received data:", data)
+    return jsonify(data)
+
+
 @app.route("/api/categories", methods=["GET"])
 def get_categories():
     categories = Categories.query.all()
@@ -70,32 +77,31 @@ def get_quiz_data():
     quiz_id = request.args.get("quiz_id")
     print("Received quiz_id:", quiz_id)
 
-    
     quiz = (
-            Categories.query
-            .options(joinedload(Categories.questions).joinedload(Questions.answers))
-            .filter_by(id=quiz_id)
-            .first()
+        Categories.query.options(
+            joinedload(Categories.questions).joinedload(Questions.answers)
         )
-    
-    
+        .filter_by(id=quiz_id)
+        .first()
+    )
+
     data = [
-            {
-                "question_id": question.id,
-                "question_text": question.question_text,
-                "category": question.category.name,
-                "answers": [
-                    {
-                        "answer_id": answer.id,
-                        "answer_text": answer.answer_text,
-                        "is_correct": answer.is_correct,
-                    }
-                    for answer in question.answers
-                ]
-            }
-            for question in quiz.questions
-            ]
-        
+        {
+            "question_id": question.id,
+            "question_text": question.question_text,
+            "category": question.category.name,
+            "answers": [
+                {
+                    "answer_id": answer.id,
+                    "answer_text": answer.answer_text,
+                    "is_correct": answer.is_correct,
+                }
+                for answer in question.answers
+            ],
+        }
+        for question in quiz.questions
+    ]
+
     return jsonify(data)
 
 

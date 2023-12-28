@@ -82,7 +82,7 @@ const Quiz = () => {
       <QuizCardHeader>
         <CardTitle>Quiz - {question.category}</CardTitle>
         <div className="flex flex-row justify-between gap-2">
-          <Button variant="destructive" size="icon" onClick={() => navigate("/")}>
+          <Button variant="destructive" size="icon" onClick={() => navigate("/menu")}>
             <Cross2Icon className="h-[1.2rem] w-[1.2rem]" />
           </Button>
           <ModeToggle />
