@@ -9,16 +9,45 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Card } from "@tremor/react";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 
 const QuizCreate = () => {
   const [formData, setFormData] = useState({
-    category: "kek",
-    difficulty: "hallo",
-    question: "hejel",
-    answers: ["a", "b", "c", "d"],
+    question_text: "",
+    category: "",
+    emoji: "",
+    difficulty: "",
+    answers: Array(4).fill({ answer_text: "", is_correct: false }),
   });
 
+  const handleCorrectAnswer = (value) => {
+    let id = null;
+    switch (value) {
+      case "answer_1":
+        id = 1;
+        break;
+      case "answer_2":
+        id = 2;
+        break;
+      case "answer_3":
+        id = 3;
+        break;
+      case "answer_4":
+        id = 4;
+        break;
+      default:
+        id = null;
+    }
+
+    if (id !== null) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        answers: prevFormData.answers.map((answer, index) => ({
+          ...answer,
+          is_correct: index + 1 === id,
+        })),
+      }));
+    }
+  };
   const handleDone = async () => {
     const res = await fetch(`http://127.0.0.1:8000/api/add_question`, {
       method: "POST",
@@ -49,15 +78,32 @@ const QuizCreate = () => {
             <Label htmlFor="category" className="text-right min-w-20">
               Category
             </Label>
-            <Input id="category" placeholder="Category" className="col-span-3" />
-            <EmojiPicker />
+            <Input
+              id="category"
+              value={formData.category}
+              onChange={(e) => {
+                setFormData((prevFormData) => ({ ...prevFormData, category: e.target.value }));
+              }}
+              placeholder="Category"
+              className="col-span-3"
+            />
+            <EmojiPicker
+              onEmojiSelect={(emoji) => {
+                setFormData((prevFormData) => ({ ...prevFormData, emoji: emoji }));
+              }}
+            />
           </div>
           <div className="flex flex-row items-center gap-2">
             <Label htmlFor="username" className="text-right min-w-20">
               Difficulty
             </Label>
             {/* <Input id="username" placeholder="@peduarte" className="col-span-3" /> */}
-            <Select>
+            <Select
+              value={formData.difficulty}
+              onValueChange={(value) => {
+                setFormData((prevFormData) => ({ ...prevFormData, difficulty: value }));
+              }}
+            >
               <SelectTrigger className="">
                 <SelectValue placeholder="Select Difficulty" />
               </SelectTrigger>
@@ -77,24 +123,82 @@ const QuizCreate = () => {
               <CardContent className="flex flex-col justify-between gap-4">
                 <div className="flex flex-col justify-start gap-2">
                   <div className="flex flex-row justify-start items-center gap-2">
-                    <Input id="question" placeholder="Enter a question" className="col-span-3" />
+                    <Input
+                      id="question"
+                      value={formData.question_text}
+                      onChange={(e) => {
+                        setFormData((prevFormData) => ({ ...prevFormData, question_text: e.target.value }));
+                      }}
+                      placeholder="Enter a question"
+                      className="col-span-3"
+                    />
                   </div>
-                  <RadioGroup defaultValue="option-one">
+                  <RadioGroup
+                    value={formData.correct_answer}
+                    onValueChange={(value) => {
+                      handleCorrectAnswer(value);
+                    }}
+                  >
                     <div className="flex flex-row justify-start items-center gap-2">
-                      <RadioGroupItem value="answer_1" id="answer_1" />
-                      <Input id="answer_1" placeholder="Enter 1st answer" className="col-span-3" />
+                      <RadioGroupItem value="answer_1" />
+                      <Input
+                        value={formData.answers[0].answer_text}
+                        onChange={(e) => {
+                          setFormData((prevFormData) => {
+                            const updatedAnswers = [...prevFormData.answers];
+                            updatedAnswers[0] = { ...updatedAnswers[0], answer_text: e.target.value };
+                            return { ...prevFormData, answers: updatedAnswers };
+                          });
+                        }}
+                        placeholder="Enter 1st answer"
+                        className="col-span-3"
+                      />
                     </div>
                     <div className="flex flex-row justify-start items-center gap-2">
-                      <RadioGroupItem value="answer_2" id="answer_2" />
-                      <Input id="answer_2" placeholder="Enter 2nd answer" className="col-span-3" />
+                      <RadioGroupItem value="answer_2" />
+                      <Input
+                        required
+                        value={formData.answers[1].answer_text}
+                        onChange={(e) => {
+                          setFormData((prevFormData) => {
+                            const updatedAnswers = [...prevFormData.answers];
+                            updatedAnswers[1] = { ...updatedAnswers[1], answer_text: e.target.value };
+                            return { ...prevFormData, answers: updatedAnswers };
+                          });
+                        }}
+                        placeholder="Enter 2nd answer"
+                        className="col-span-3"
+                      />
                     </div>
                     <div className="flex flex-row justify-start items-center gap-2">
-                      <RadioGroupItem value="answer_3" id="answer_3" />
-                      <Input id="answer_3" placeholder="Enter 3rd answer" className="col-span-3" />
+                      <RadioGroupItem value="answer_3" />
+                      <Input
+                        value={formData.answers[2].answer_text}
+                        onChange={(e) => {
+                          setFormData((prevFormData) => {
+                            const updatedAnswers = [...prevFormData.answers];
+                            updatedAnswers[2] = { ...updatedAnswers[2], answer_text: e.target.value };
+                            return { ...prevFormData, answers: updatedAnswers };
+                          });
+                        }}
+                        placeholder="Enter 3rd answer"
+                        className="col-span-3"
+                      />{" "}
                     </div>
                     <div className="flex flex-row justify-start items-center gap-2">
-                      <RadioGroupItem value="answer_4" id="answer_4" />
-                      <Input id="answer_4" placeholder="Enter 4th answer" className="col-span-3" />
+                      <RadioGroupItem value="answer_4" />
+                      <Input
+                        value={formData.answers[3].answer_text}
+                        onChange={(e) => {
+                          setFormData((prevFormData) => {
+                            const updatedAnswers = [...prevFormData.answers];
+                            updatedAnswers[3] = { ...updatedAnswers[3], answer_text: e.target.value };
+                            return { ...prevFormData, answers: updatedAnswers };
+                          });
+                        }}
+                        placeholder="Enter 4th answer"
+                        className="col-span-3"
+                      />
                     </div>
                   </RadioGroup>
                 </div>

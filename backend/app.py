@@ -25,6 +25,7 @@ class Categories(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     emoji = Column(String, nullable=False)
+    difficulty = Column(String, nullable=False, default="easy")
     questions = relationship("Questions", backref="category")
 
 
@@ -46,11 +47,11 @@ class Answers(db.Model):
     question_id = Column(Integer, ForeignKey("questions.id"))
 
 
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()
 
 
-@app.route("/api/add_question", methods=["GET", "POST"])
+@app.route("/api/add_question", methods=["POST"])
 def post_question():
     data = request.get_json()
     print("Received data:", data)
@@ -65,6 +66,7 @@ def get_categories():
             "id": category.id,
             "name": category.name,
             "emoji": category.emoji,
+            "difficulty": category.difficulty,
         }
         for category in categories
     ]

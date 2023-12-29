@@ -5,10 +5,15 @@ import { Button } from "./button";
 import { SmileIcon } from "lucide-react";
 import { useState, useRef } from "react";
 
-const EmojiPicker = ({}) => {
+const EmojiPicker = ({ onEmojiSelect }) => {
   const [emoji, setEmoji] = useState(null);
   const containerRef = useRef(null);
   const [open, setOpen] = useState(false);
+
+  const handleEmojiSelectInternal = (emoji) => {
+    setEmoji(emoji.native);
+    onEmojiSelect(emoji.native); // Call the external callback function
+  };
 
   return (
     <div ref={containerRef}>
@@ -33,10 +38,7 @@ const EmojiPicker = ({}) => {
               width: containerRef.current?.offsetWidth,
             }}
             container={containerRef.current}
-            onEmojiSelect={(emoji) => {
-              setEmoji(emoji.native);
-              console.log(emoji.native);
-            }}
+            onEmojiSelect={handleEmojiSelectInternal}
           />
         </PopoverContent>
       </Popover>

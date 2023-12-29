@@ -34,7 +34,7 @@ const QuizMenu = () => {
       <QuizCardContent className="items-center flex flex-col gap-3 justify-center border-b-0">
         {isPending && <QuizLoading />}
         {error && <QuizError />}
-        {data && data.map((category) => <QuizMenuEntry key={category.id} id={category.id} category={category.name} emoji={category.emoji} />)}
+        {data && data.map((category) => <QuizMenuEntry key={category.id} id={category.id} category={category.name} emoji={category.emoji} difficulty={category.difficulty}/>)}
       </QuizCardContent>
     </>
   );
