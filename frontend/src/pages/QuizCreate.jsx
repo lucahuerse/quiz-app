@@ -48,6 +48,7 @@ const QuizCreate = () => {
       }));
     }
   };
+
   const handleDone = async () => {
     const res = await fetch(`http://127.0.0.1:8000/api/add_question`, {
       method: "POST",
@@ -134,72 +135,34 @@ const QuizCreate = () => {
                     />
                   </div>
                   <RadioGroup
-                    value={formData.correct_answer}
                     onValueChange={(value) => {
-                      handleCorrectAnswer(value);
+                      setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        answers: prevFormData.answers.map((answer, index) => ({
+                          ...answer,
+                          is_correct: index === value,
+                        })),
+                      }));
                     }}
                   >
-                    <div className="flex flex-row justify-start items-center gap-2">
-                      <RadioGroupItem value="answer_1" />
-                      <Input
-                        value={formData.answers[0].answer_text}
-                        onChange={(e) => {
-                          setFormData((prevFormData) => {
-                            const updatedAnswers = [...prevFormData.answers];
-                            updatedAnswers[0] = { ...updatedAnswers[0], answer_text: e.target.value };
-                            return { ...prevFormData, answers: updatedAnswers };
-                          });
-                        }}
-                        placeholder="Enter 1st answer"
-                        className="col-span-3"
-                      />
-                    </div>
-                    <div className="flex flex-row justify-start items-center gap-2">
-                      <RadioGroupItem value="answer_2" />
-                      <Input
-                        required
-                        value={formData.answers[1].answer_text}
-                        onChange={(e) => {
-                          setFormData((prevFormData) => {
-                            const updatedAnswers = [...prevFormData.answers];
-                            updatedAnswers[1] = { ...updatedAnswers[1], answer_text: e.target.value };
-                            return { ...prevFormData, answers: updatedAnswers };
-                          });
-                        }}
-                        placeholder="Enter 2nd answer"
-                        className="col-span-3"
-                      />
-                    </div>
-                    <div className="flex flex-row justify-start items-center gap-2">
-                      <RadioGroupItem value="answer_3" />
-                      <Input
-                        value={formData.answers[2].answer_text}
-                        onChange={(e) => {
-                          setFormData((prevFormData) => {
-                            const updatedAnswers = [...prevFormData.answers];
-                            updatedAnswers[2] = { ...updatedAnswers[2], answer_text: e.target.value };
-                            return { ...prevFormData, answers: updatedAnswers };
-                          });
-                        }}
-                        placeholder="Enter 3rd answer"
-                        className="col-span-3"
-                      />{" "}
-                    </div>
-                    <div className="flex flex-row justify-start items-center gap-2">
-                      <RadioGroupItem value="answer_4" />
-                      <Input
-                        value={formData.answers[3].answer_text}
-                        onChange={(e) => {
-                          setFormData((prevFormData) => {
-                            const updatedAnswers = [...prevFormData.answers];
-                            updatedAnswers[3] = { ...updatedAnswers[3], answer_text: e.target.value };
-                            return { ...prevFormData, answers: updatedAnswers };
-                          });
-                        }}
-                        placeholder="Enter 4th answer"
-                        className="col-span-3"
-                      />
-                    </div>
+                    {formData.answers.map((answer, index) => (
+                      <div key={"div." + index} className="flex flex-row justify-start items-center gap-2">
+                        <RadioGroupItem key={"RGI." + index} value={index} />
+                        <Input
+                          key={"RGIinput." + index}
+                          value={answer.answer_text}
+                          onChange={(e) => {
+                            setFormData((prevFormData) => {
+                              const updatedAnswers = [...prevFormData.answers];
+                              updatedAnswers[index] = { ...updatedAnswers[index], answer_text: e.target.value };
+                              return { ...prevFormData, answers: updatedAnswers };
+                            });
+                          }}
+                          placeholder="Enter answer"
+                          className="col-span-3"
+                        />
+                      </div>
+                    ))}
                   </RadioGroup>
                 </div>
                 <div className="flex flex-row justify-end">
