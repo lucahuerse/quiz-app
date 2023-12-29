@@ -3,16 +3,16 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { Button } from "./button";
 import { SmileIcon } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, forwardRef } from "react";
 
-const EmojiPicker = ({ onEmojiSelect }) => {
+const EmojiPicker = forwardRef(({ onChange }, ref) => {
   const [emoji, setEmoji] = useState(null);
   const containerRef = useRef(null);
   const [open, setOpen] = useState(false);
 
   const handleEmojiSelectInternal = (emoji) => {
     setEmoji(emoji.native);
-    onEmojiSelect(emoji.native); // Call the external callback function
+    onChange(emoji.native); // Call the external callback function
   };
 
   return (
@@ -31,6 +31,7 @@ const EmojiPicker = ({ onEmojiSelect }) => {
         </PopoverTrigger>
         <PopoverContent className="w-auto h-auto p-0 border-0 rounded-xl">
           <Picker
+            ref={ref}
             data={data}
             previewPosition="none"
             theme="auto"
@@ -44,6 +45,6 @@ const EmojiPicker = ({ onEmojiSelect }) => {
       </Popover>
     </div>
   );
-};
+});
 
 export { EmojiPicker };
