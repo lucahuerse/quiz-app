@@ -1,7 +1,6 @@
 import { QuizMenuEntry } from "@/components/ui/QuizMenuEntry";
-import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useQuery } from "@tanstack/react-query";
-import { PlusIcon } from "lucide-react";
 import { QuizCardContent } from "../components/ui/QuizCardContent";
 import { QuizCardHeader } from "../components/ui/QuizCardHeader";
 import { CardTitle } from "../components/ui/card";
@@ -9,7 +8,6 @@ import { ModeToggle } from "../components/ui/mode-toggle";
 import { QuizCreate } from "./QuizCreate";
 import { QuizError } from "./QuizError";
 import { QuizLoading } from "./QuizLoading";
-import { EmojiPicker } from "@/components/ui/emoji-picker";
 
 const QuizMenu = () => {
   const { isPending, error, data } = useQuery({
@@ -34,7 +32,7 @@ const QuizMenu = () => {
       <QuizCardContent className="items-center flex flex-col gap-3 justify-center border-b-0">
         {isPending && <QuizLoading />}
         {error && <QuizError />}
-        {data && data.map((category) => <QuizMenuEntry key={category.id} id={category.id} category={category.name} emoji={category.emoji} difficulty={category.difficulty}/>)}
+        {data && data.map((category) => <QuizMenuEntry key={category.id} id={category.id} category={category.name} emoji={category.emoji} difficulty={category.difficulty} questions_count={category.num_questions}/>)}
       </QuizCardContent>
     </>
   );

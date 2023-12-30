@@ -11,12 +11,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
-  category: z.string().min(1),
-  emoji: z.string().emoji(),
+  category: z.string().min(1, { required_error: "Category must be at least one character long" }),
+  emoji: z.string().emoji({ required_error: "Emoji must be a valid emoji" }),
   difficulty: z.enum(["easy", "medium", "hard"], {
-    required_error: "Difficulty must be easy, medium or hard",
+    required_error: "Pleses select a difficulty.",
   }),
   questions: z
     .array(
@@ -32,6 +33,8 @@ const formSchema = z.object({
 });
 
 const QuizCreate = () => {
+  const { toast } = useToast();
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,16 +52,33 @@ const QuizCreate = () => {
   const onSubmit = async (data) => {
     console.log(data);
 
-    const result = await fetch(`http://127.0.0.1:8000/api/add_question`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }).then((res) => res.json());
+    const { errors } = form.formState;
 
-    console.log(result);
-    console.log("submitted");
+    if (!Object.keys(errors).length) {
+      const result = await fetch(`http://127.0.0.1:8000/api/add_question`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }).then((res) => res.json());
+
+      console.log(result);
+      console.log("submitted");
+
+      toast({
+        title: "Quiz Created",
+        description: "Your quiz has been created",
+      });
+    } else {
+      const errorMessage = errors[Object.keys(errors)[0]]?.message;
+      console.log(errorMessage);
+
+      toast({
+        title: "Error",
+        description: errorMessage || "Please fill out all fields",
+      });
+    }
   };
 
   return (
@@ -121,9 +141,9 @@ const QuizCreate = () => {
                 )}
               />
 
-              <ScrollArea className=" w-full h-[32rem]">
-                <div className="flex flex-col gap-4">
-                  <Card>
+              <div className="flex flex-col gap-4">
+                <Card>
+                  <ScrollArea className=" w-full h-[32rem]">
                     <CardHeader>
                       <CardTitle className="font-semibold text-lg">Add Questions</CardTitle>
                       <CardDescription>Enter at least one question with four answers each and select the correct answer.</CardDescription>
@@ -167,25 +187,23 @@ const QuizCreate = () => {
                                     {field.value.map((_, answer_index) => (
                                       <FormItem key={answer_index} className="rounded-md bg-slate-800 flex flex-row justify-between items-center space-y-0">
                                         <div className="px-3">
-                                        <FormControl>
-                                          <RadioGroupItem value={answer_index} />
-                                        </FormControl>
+                                          <FormControl>
+                                            <RadioGroupItem value={answer_index} />
+                                          </FormControl>
                                         </div>
-                                        <div>
-
-                                        </div>
+                                        <div></div>
                                         {/* <FormLabel className="font-normal flex-grow-0"> */}
-                                          <FormField
-                                            control={form.control}
-                                            name={`questions.${question_index}.answers.${answer_index}.answer_text`}
-                                            render={({ field }) => (
-                                              <FormItem className="flex-grow">
-                                                <FormControl>
-                                                  <Input {...field} className="rounded-md" placeholder={`Option ${answer_index + 1}`} />
-                                                </FormControl>
-                                              </FormItem>
-                                            )}
-                                          />
+                                        <FormField
+                                          control={form.control}
+                                          name={`questions.${question_index}.answers.${answer_index}.answer_text`}
+                                          render={({ field }) => (
+                                            <FormItem className="flex-grow">
+                                              <FormControl>
+                                                <Input {...field} className="rounded-md" placeholder={`Option ${answer_index + 1}`} />
+                                              </FormControl>
+                                            </FormItem>
+                                          )}
+                                        />
                                         {/* </FormLabel> */}
                                       </FormItem>
                                     ))}
@@ -198,9 +216,9 @@ const QuizCreate = () => {
                         </div>
                       </CardContent>
                     ))}
-                  </Card>
-                </div>
-              </ScrollArea>
+                  </ScrollArea>
+                </Card>
+              </div>
             </div>
             <DialogFooter className="gap-2 sm:gap-0">
               <Button type="button" variant="secondary" onClick={handleAddQuestion}>

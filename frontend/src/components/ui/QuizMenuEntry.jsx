@@ -9,7 +9,7 @@ export function BadgeSecondary() {
   return <Badge variant="secondary">Secondary</Badge>;
 }
 
-const QuizMenuEntry = ({ id, category, emoji, difficulty }) => {
+const QuizMenuEntry = ({ id, category, emoji, difficulty, questions_count }) => {
   return (
     <Card>
       <CardHeader className="p-6 flex flex-row items-center justify-between space-y-0">
@@ -21,7 +21,7 @@ const QuizMenuEntry = ({ id, category, emoji, difficulty }) => {
           <div className="flex flex-row justify-start gap-3 pt-3">
             <Badge variant="secondary" className="flex flex-row justify-between gap-1">
               <span>❓</span>
-              <span>Questions: 5</span>
+              <span>Questions: {questions_count}</span>
             </Badge>
             <Badge
               variant="secondary"

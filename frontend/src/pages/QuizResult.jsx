@@ -12,14 +12,17 @@ import { Progress } from "../components/ui/progress";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useNavigate } from "react-router-dom";
 
-const QuizResult = ({ category, totalQuestions, score, reset }) => {
+const QuizResult = ({ category, emoji, totalQuestions, score, reset }) => {
   const finalScore = (score / totalQuestions) * 100;
   const navigate = useNavigate();
 
   return (
     <>
       <QuizCardHeader>
-        <CardTitle>Quiz - {category}</CardTitle>
+        <CardTitle className="flex flex-row justify-start gap-2">
+          <span>{emoji}</span>
+          <span>{category}</span>
+        </CardTitle>
         <ModeToggle />
       </QuizCardHeader>
       <QuizCardContent className="items-center flex flex-col gap-3 justify-center">

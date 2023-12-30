@@ -98,6 +98,7 @@ def get_categories():
             "emoji": category.emoji,
             "difficulty": category.difficulty,
             "timestamp": category.timestamp,
+            "num_questions": len(category.questions),
         }
         for category in categories
     ]
@@ -124,6 +125,7 @@ def get_quiz_data():
             "question_id": question.id,
             "question_text": question.question_text,
             "category": question.category.name,
+            "emoji": question.category.emoji,
             "answers": [
                 {
                     "answer_id": answer.id,

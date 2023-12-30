@@ -72,7 +72,7 @@ const Quiz = () => {
 
   if (isPending) return <QuizLoading />;
   if (error) return <QuizError errorMessage={error.message} />;
-  if (result) return <QuizResult category={question.category} totalQuestions={data.length} score={score} reset={reset} />;
+  if (result) return <QuizResult category={question.category} emoji={question.emoji} totalQuestions={data.length} score={score} reset={reset} />;
 
   if (question === undefined) setQuestion(data[index] ?? null);
   if (!question) return "No data";
@@ -80,7 +80,10 @@ const Quiz = () => {
   return (
     <>
       <QuizCardHeader>
-        <CardTitle>Quiz - {question.category}</CardTitle>
+        <CardTitle className="flex flex-row justify-start gap-2">
+          <span>{question.emoji}</span>
+          <span>{question.category}</span>
+        </CardTitle>
         <div className="flex flex-row justify-between gap-2">
           <Button variant="destructive" size="icon" onClick={() => navigate("/menu")}>
             <Cross2Icon className="h-[1.2rem] w-[1.2rem]" />
