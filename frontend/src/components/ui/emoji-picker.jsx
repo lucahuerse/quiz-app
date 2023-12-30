@@ -1,9 +1,9 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { Button } from "./button";
 import { SmileIcon } from "lucide-react";
-import { useState, useRef, forwardRef } from "react";
+import { forwardRef, useRef, useState } from "react";
+import { Button } from "./button";
 
 const EmojiPicker = forwardRef(({ onChange }, ref) => {
   const [emoji, setEmoji] = useState(null);

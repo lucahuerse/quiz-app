@@ -1,7 +1,6 @@
-import React from "react";
-import { QuizCardHeader } from "../components/ui/QuizCardHeader";
 import { QuizCardContent } from "../components/ui/QuizCardContent";
 import { QuizCardFooter } from "../components/ui/QuizCardFooter";
+import { QuizCardHeader } from "../components/ui/QuizCardHeader";
 import { CardTitle } from "../components/ui/card";
 import { ModeToggle } from "../components/ui/mode-toggle";
 import { Skeleton } from "../components/ui/skeleton";

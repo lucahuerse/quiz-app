@@ -1,19 +1,17 @@
-import React from "react";
+import { Cross2Icon, ResetIcon } from "@radix-ui/react-icons";
+import { ProgressCircle } from "@tremor/react";
+import { useNavigate } from "react-router-dom";
+import { QuizCardContent } from "../components/ui/QuizCardContent";
+import { QuizCardFooter } from "../components/ui/QuizCardFooter";
 import { QuizCardHeader } from "../components/ui/QuizCardHeader";
+import { Button } from "../components/ui/button";
 import { CardTitle } from "../components/ui/card";
 import { ModeToggle } from "../components/ui/mode-toggle";
-import { QuizCardContent } from "../components/ui/QuizCardContent";
-import { TypographyH2 } from "../components/ui/typography_h2";
-import { ProgressCircle } from "@tremor/react";
-import { Button } from "../components/ui/button";
-import { ResetIcon } from "@radix-ui/react-icons";
-import { QuizCardFooter } from "../components/ui/QuizCardFooter";
 import { Progress } from "../components/ui/progress";
-import { Cross2Icon } from "@radix-ui/react-icons";
-import { useNavigate } from "react-router-dom";
+import { TypographyH2 } from "../components/ui/typography_h2";
 
 const QuizResult = ({ category, emoji, totalQuestions, score, reset }) => {
-  const finalScore = (score / totalQuestions) * 100;
+  const finalScore = Math.round((score / totalQuestions) * 100);
   const navigate = useNavigate();
 
   return (
@@ -31,8 +29,8 @@ const QuizResult = ({ category, emoji, totalQuestions, score, reset }) => {
           <h3 className="text-center font-semibold text-xl p-3 pt-0">
             You scored {score} out of {totalQuestions} points.
           </h3>
-          <ProgressCircle color={finalScore >= 90 ? "green" : finalScore >= 80 ? "yellow" : finalScore >= 60 ? "orange" : "red"} className="p-3" size="xl" value={(score / totalQuestions) * 100}>
-            <span className="text-lg dark:text-white text-black font-medium">{(score / totalQuestions) * 100}%</span>
+          <ProgressCircle color={finalScore >= 90 ? "green" : finalScore >= 80 ? "yellow" : finalScore >= 60 ? "orange" : "red"} className="p-3" size="xl" value={finalScore}>
+            <span className="text-lg dark:text-white text-black font-medium">{finalScore}%</span>
           </ProgressCircle>
           <div className="flex flex-row justify-between gap-2">
             <Button className="flex flex-row justify-between gap-1 w-min" onClick={reset}>

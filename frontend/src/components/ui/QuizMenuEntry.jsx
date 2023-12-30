@@ -1,9 +1,9 @@
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { PlayIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "./button";
 import { Card, CardHeader, CardTitle } from "./card";
-import { cn } from "@/lib/utils";
 
 export function BadgeSecondary() {
   return <Badge variant="secondary">Secondary</Badge>;

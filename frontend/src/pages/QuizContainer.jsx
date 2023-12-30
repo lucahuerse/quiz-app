@@ -1,8 +1,8 @@
-import { Quiz } from "./Quiz";
-import { QuizMenu } from "./QuizMenu";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Card } from "../components/ui/card";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Quiz } from "./Quiz";
 import { QuizCreate } from "./QuizCreate";
+import { QuizMenu } from "./QuizMenu";
 
 const QuizContainer = () => {
   return (

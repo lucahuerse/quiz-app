@@ -1,6 +1,5 @@
 import { QuizMenuEntry } from "@/components/ui/QuizMenuEntry";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QuizCardContent } from "../components/ui/QuizCardContent";
 import { QuizCardHeader } from "../components/ui/QuizCardHeader";
 import { CardTitle } from "../components/ui/card";
@@ -10,6 +9,13 @@ import { QuizError } from "./QuizError";
 import { QuizLoading } from "./QuizLoading";
 
 const QuizMenu = () => {
+  const queryClient = useQueryClient();
+
+  const handleQuizCreated = () => {
+    // Invalidate and refetch the quiz menu data after creating a new quiz
+    queryClient.invalidateQueries(["categories"]);
+  };
+
   const { isPending, error, data } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
@@ -25,14 +31,17 @@ const QuizMenu = () => {
       <QuizCardHeader>
         <CardTitle>Menu</CardTitle>
         <div className="flex flex-row justify-between gap-2">
-          <QuizCreate />
+          <QuizCreate onQuizCreated={handleQuizCreated} />
           <ModeToggle />
         </div>
       </QuizCardHeader>
       <QuizCardContent className="items-center flex flex-col gap-3 justify-center border-b-0">
         {isPending && <QuizLoading />}
         {error && <QuizError />}
-        {data && data.map((category) => <QuizMenuEntry key={category.id} id={category.id} category={category.name} emoji={category.emoji} difficulty={category.difficulty} questions_count={category.num_questions}/>)}
+        {data &&
+          data.map((category) => (
+            <QuizMenuEntry key={category.id} id={category.id} category={category.name} emoji={category.emoji} difficulty={category.difficulty} questions_count={category.num_questions} />
+          ))}
       </QuizCardContent>
     </>
   );

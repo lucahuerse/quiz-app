@@ -5,9 +5,9 @@ import { TypographyH2 } from "@/components/ui/typography_h2";
 import { cn } from "@/lib/utils";
 import { ArrowRightIcon, CheckCircledIcon, Cross2Icon, CrossCircledIcon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeftIcon, CircleIcon } from "lucide-react";
+import { CircleIcon } from "lucide-react";
 import { useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { QuizCardContent } from "../components/ui/QuizCardContent";
 import { QuizCardFooter } from "../components/ui/QuizCardFooter";
 import { QuizCardHeader } from "../components/ui/QuizCardHeader";
@@ -101,7 +101,7 @@ const Quiz = () => {
             key={answer.answer_id}
             variant="outline"
             className={cn(
-              "justify-start text-left whitespace-pre-line py-2",
+              "justify-start text-left h-auto whitespace-pre-line py-2",
 
               lock ? "cursor-default" : "",
               lock && answer.is_correct
@@ -112,7 +112,7 @@ const Quiz = () => {
             onClick={checkAnswer(answer)}
           >
             {lock ? answer.is_correct ? <CheckCircledIcon className="min-w-5 w-5 h-5 mr-2" /> : <CrossCircledIcon className="min-w-5 w-5 h-5 mr-2" /> : <CircleIcon className="min-w-5 w-5 h-5 mr-2" />}
-            {answer.answer_text}
+            <span>{answer.answer_text}</span>
           </Button>
         ))}
         <div className="flex flex-row justify-end pt-3">

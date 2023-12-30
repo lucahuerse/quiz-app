@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useToast } from "@/components/ui/use-toast";
 
 const formSchema = z.object({
   category: z.string().min(1, { required_error: "Category must be at least one character long" }),
@@ -32,9 +32,8 @@ const formSchema = z.object({
     .min(1),
 });
 
-const QuizCreate = () => {
+const QuizCreate = ({ onQuizCreated }) => {
   const { toast } = useToast();
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,7 +50,6 @@ const QuizCreate = () => {
 
   const onSubmit = async (data) => {
     console.log(data);
-
     const { errors } = form.formState;
 
     if (!Object.keys(errors).length) {
@@ -70,6 +68,11 @@ const QuizCreate = () => {
         title: "Quiz Created",
         description: "Your quiz has been created",
       });
+
+      // Call the onQuizCreated callback if provided
+      if (onQuizCreated) {
+        onQuizCreated();
+      }
     } else {
       const errorMessage = errors[Object.keys(errors)[0]]?.message;
       console.log(errorMessage);
@@ -192,7 +195,6 @@ const QuizCreate = () => {
                                           </FormControl>
                                         </div>
                                         <div></div>
-                                        {/* <FormLabel className="font-normal flex-grow-0"> */}
                                         <FormField
                                           control={form.control}
                                           name={`questions.${question_index}.answers.${answer_index}.answer_text`}
@@ -204,7 +206,6 @@ const QuizCreate = () => {
                                             </FormItem>
                                           )}
                                         />
-                                        {/* </FormLabel> */}
                                       </FormItem>
                                     ))}
                                   </RadioGroup>
