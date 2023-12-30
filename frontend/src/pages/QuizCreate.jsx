@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";
@@ -69,7 +68,7 @@ const QuizCreate = () => {
           <PlusIcon className="h-[1.2rem] w-[1.2rem]" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="md:min-w-[64rem]">
+      <DialogContent className="md:min-w-[32rem]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <DialogHeader>
@@ -84,8 +83,7 @@ const QuizCreate = () => {
                   render={({ field, fieldState: { error } }) => (
                     <FormItem className=" flex-grow">
                       <FormLabel className="text-right min-w-20">Category</FormLabel>
-                      <Input {...field} placeholder="Category" className={cn("col-span-3", !!error && "border-red-400 focus-visible:ring-red-400")} />
-                      <FormMessage />
+                      <Input {...field} placeholder="Category" className="col-span-3" />
                     </FormItem>
                   )}
                 />
@@ -96,7 +94,6 @@ const QuizCreate = () => {
                     <FormItem>
                       <FormLabel className="sr-only">Emoji</FormLabel>
                       <EmojiPicker {...field} />
-                      {/* <FormMessage /> */}
                     </FormItem>
                   )}
                 />
@@ -107,7 +104,7 @@ const QuizCreate = () => {
                 name="difficulty"
                 render={({ field }) => (
                   <FormItem className="">
-                    <FormLabel>Difficutly</FormLabel>
+                    <FormLabel>Difficulty</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -120,42 +117,43 @@ const QuizCreate = () => {
                         <SelectItem value="hard">Hard</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <ScrollArea className=" w-full md:h-64">
+              <ScrollArea className=" w-full h-[32rem]">
                 <div className="flex flex-col gap-4">
-                  {form.watch("questions").map((_, question_index) => (
-                    <Card key={question_index}>
-                      <CardHeader>
-                        <CardTitle className="font-semibold text-lg">Add Question</CardTitle>
-                        <CardDescription>Enter at least one question with four answers each and select the correct answer.</CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex flex-col justify-between gap-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="font-semibold text-lg">Add Questions</CardTitle>
+                      <CardDescription>Enter at least one question with four answers each and select the correct answer.</CardDescription>
+                    </CardHeader>
+                    {form.watch("questions").map((_, question_index) => (
+                      <CardContent key={question_index} className="flex flex-col justify-between gap-4">
                         <div className="flex flex-col justify-start gap-6">
                           <FormField
+                            id="question"
                             control={form.control}
                             name={`questions.${question_index}.question_text`}
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="flex flex-col justify-start space-y-0 gap-2">
                                 <FormLabel>Question</FormLabel>
                                 <FormControl>
                                   <Input {...field} placeholder="Enter a question" />
                                 </FormControl>
-                                <FormMessage />
                               </FormItem>
                             )}
                           />
                           <FormField
+                            id="answers"
                             control={form.control}
                             name={`questions.${question_index}.answers`}
                             render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Possible answers...</FormLabel>
+                              <FormItem className="flex flex-col justify-start space-y-0 gap-2">
+                                <FormLabel>Answers</FormLabel>
                                 <FormControl>
                                   <RadioGroup
+                                    className="flex flex-col gap-2"
                                     onValueChange={(value) => {
                                       field.onChange(
                                         field.value.map((answer, index) => ({
@@ -165,27 +163,30 @@ const QuizCreate = () => {
                                       );
                                     }}
                                     defaultValue={field.value}
-                                    className="flex flex-col space-y-1"
                                   >
                                     {field.value.map((_, answer_index) => (
-                                      <FormItem className="flex items-center space-x-3 space-y-0">
+                                      <FormItem key={answer_index} className="rounded-md bg-slate-800 flex flex-row justify-between items-center space-y-0">
+                                        <div className="px-3">
                                         <FormControl>
                                           <RadioGroupItem value={answer_index} />
                                         </FormControl>
-                                        <FormLabel className="font-normal">
+                                        </div>
+                                        <div>
+
+                                        </div>
+                                        {/* <FormLabel className="font-normal flex-grow-0"> */}
                                           <FormField
                                             control={form.control}
                                             name={`questions.${question_index}.answers.${answer_index}.answer_text`}
                                             render={({ field }) => (
-                                              <FormItem className="flex flex-row justify-start items-center gap-2">
+                                              <FormItem className="flex-grow">
                                                 <FormControl>
-                                                  <Input {...field} placeholder="Enter an answer" className="col-span-3" />
+                                                  <Input {...field} className="rounded-md" placeholder={`Option ${answer_index + 1}`} />
                                                 </FormControl>
-                                                <FormMessage />
                                               </FormItem>
                                             )}
                                           />
-                                        </FormLabel>
+                                        {/* </FormLabel> */}
                                       </FormItem>
                                     ))}
                                   </RadioGroup>
@@ -196,12 +197,12 @@ const QuizCreate = () => {
                           />
                         </div>
                       </CardContent>
-                    </Card>
-                  ))}
+                    ))}
+                  </Card>
                 </div>
               </ScrollArea>
             </div>
-            <DialogFooter>
+            <DialogFooter className="gap-2 sm:gap-0">
               <Button type="button" variant="secondary" onClick={handleAddQuestion}>
                 Add Question
               </Button>

@@ -2,16 +2,18 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, joinedload
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
+from datetime import datetime
 
 
 app = Flask(__name__)
-CORS(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///quiz.db"
 db = SQLAlchemy(app)
+
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 import logging
 
@@ -26,6 +28,7 @@ class Categories(db.Model):
     name = Column(String, nullable=False)
     emoji = Column(String, nullable=False)
     difficulty = Column(String, nullable=False, default="easy")
+    timestamp = Column(DateTime, server_default=func.now(), nullable=False)
     questions = relationship("Questions", backref="category")
 
 
@@ -47,15 +50,42 @@ class Answers(db.Model):
     question_id = Column(Integer, ForeignKey("questions.id"))
 
 
-with app.app_context():
-    db.create_all()
+# with app.app_context():
+#     db.create_all()
 
 
 @app.route("/api/add_question", methods=["POST"])
 def post_question():
     data = request.get_json()
     print("Received data:", data)
-    return jsonify(data)
+
+    category = Categories(
+        name=data["category"], emoji=data["emoji"], difficulty=data["difficulty"]
+    )
+    db.session.add(category)
+
+    for question_data in data["questions"]:
+        new_question = Questions(
+            question_text=question_data["question_text"], category=category
+        )
+        db.session.add(new_question)
+
+        # Create answers
+        for answer_data in question_data["answers"]:
+            new_answer = Answers(
+                answer_text=answer_data["answer_text"],
+                is_correct=answer_data["is_correct"],
+                question=new_question,
+            )
+            new_question.answers.append(
+                new_answer
+            )  # Use the relationship property to append the answer
+            db.session.add(new_answer)
+
+    db.session.commit()
+    print("Added data to the database")
+
+    return jsonify({"message": "Questions added successfully"}), 201
 
 
 @app.route("/api/categories", methods=["GET"])
@@ -67,9 +97,11 @@ def get_categories():
             "name": category.name,
             "emoji": category.emoji,
             "difficulty": category.difficulty,
+            "timestamp": category.timestamp,
         }
         for category in categories
     ]
+    data.sort(key=lambda x: x["timestamp"], reverse=True)
     return jsonify(data)
 
 

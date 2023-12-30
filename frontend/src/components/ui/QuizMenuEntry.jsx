@@ -25,12 +25,12 @@ const QuizMenuEntry = ({ id, category, emoji, difficulty }) => {
             </Badge>
             <Badge
               variant="secondary"
-              className={cn("flex flex-row justify-between gap-1", difficulty === "Easy" && "bg-green-700", difficulty === "Medium" && "bg-yellow-700", difficulty === "Hard" && "bg-red-700")}
+              className={cn("flex flex-row justify-between gap-1", difficulty === "easy" && "bg-green-700", difficulty === "medium" && "bg-yellow-700", difficulty === "hard" && "bg-red-700")}
             >
-              {difficulty === "Easy" && <span>😴 </span>}
-              {difficulty === "Medium" && <span>🤔 </span>}
-              {difficulty === "Hard" && <span>🥵 </span>}
-              <span>{difficulty}</span>
+              {difficulty === "easy" && <span>😴 </span>}
+              {difficulty === "medium" && <span>🤔 </span>}
+              {difficulty === "hard" && <span>🥵 </span>}
+              <span className="capitalize">{difficulty}</span>
             </Badge>
           </div>
         </div>
