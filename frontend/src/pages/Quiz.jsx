@@ -20,7 +20,6 @@ const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
 const Quiz = () => {
   let [index, setIndex] = useState(0);
-  let [goneBack, setGoneBack] = useState(false);
   let [question, setQuestion] = useState();
   let [lock, setLock] = useState(false);
   let [score, setScore] = useState(0);
@@ -32,7 +31,8 @@ const Quiz = () => {
   const { isPending, error, data } = useQuery({
     queryKey: ["quiz_data", quizID],
     queryFn: async () => {
-      const res = await fetch(`http://127.0.0.1:8000/api/quiz_data?quiz_id=${quizID}`);
+      const res = await fetch(`https://rnxlf-37-24-135-241.a.free.pinggy.link/api/quiz_data?quiz_id=${quizID}`);
+      // const res = await fetch(`http://127.0.0.1:8000/api/quiz_data?quiz_id=${quizID}`);
       const data = await res.json();
       // await delay(1000);
       return data;

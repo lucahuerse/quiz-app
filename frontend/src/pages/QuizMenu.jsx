@@ -19,7 +19,7 @@ const QuizMenu = () => {
   const { isPending, error, data } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
-      const res = await fetch(`http://127.0.0.1:8000/api/categories`);
+      const res = await fetch(`https://rnxlf-37-24-135-241.a.free.pinggy.link/api/categories`);
       const data = await res.json();
       // await delay(1000);
       return data;

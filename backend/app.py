@@ -53,6 +53,9 @@ class Answers(db.Model):
 # with app.app_context():
 #     db.create_all()
 
+# @app.route("/", methods=["GET"])
+# def index():
+#     return "hello luca"
 
 @app.route("/api/add_question", methods=["POST"])
 def post_question():
