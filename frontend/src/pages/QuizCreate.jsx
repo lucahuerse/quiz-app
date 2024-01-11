@@ -53,7 +53,7 @@ const QuizCreate = ({ onQuizCreated }) => {
     const { errors } = form.formState;
 
     if (!Object.keys(errors).length) {
-      const result = await fetch(`https://rnxlf-37-24-135-241.a.free.pinggy.link/api/add_question`, {
+      const result = await fetch(`http://127.0.0.1:8000/api/add_question`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
